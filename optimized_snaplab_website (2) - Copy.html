@@ -896,30 +896,9 @@
             }
         }
 
-        /* Focus styles for keyboard navigation */
-        a:focus, button:focus, .rating-button:focus {
-            outline: 2px solid var(--accent-yellow);
-            outline-offset: 2px;
-        }
-
-        /* Remove default button focus outline that causes animation */
-        button:focus:not(:focus-visible) {
-            outline: none;
-        }
-
-        button:focus-visible {
-            outline: 2px solid var(--accent-yellow);
-            outline-offset: 2px;
-        }
-
         /* Prevent button animation ring */
         .btn-primary, .btn-secondary, .btn-contact, .btn-login, .plan-btn {
             -webkit-tap-highlight-color: transparent;
-        }
-
-        .btn-primary:focus, .btn-secondary:focus, .btn-contact:focus, .btn-login:focus, .plan-btn:focus {
-            outline: 2px solid var(--accent-yellow);
-            outline-offset: 2px;
         }
 
         /* Loading states */
