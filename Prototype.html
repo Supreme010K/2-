@@ -1214,7 +1214,11 @@
 
         // Plan selection functionality (no redirect messages)
         document.querySelectorAll('.plan-btn').forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function(e) {
+                // Prevent any default behavior and stop other handlers
+                e.preventDefault();
+                e.stopPropagation();
+
                 const planName = this.getAttribute('data-plan');
                 if (planName === 'Enterprise') {
                     document.querySelector('#contact').scrollIntoView({
