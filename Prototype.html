@@ -1212,7 +1212,7 @@
             });
         });
 
-        // Plan selection functionality
+        // Plan selection functionality (no redirect messages)
         document.querySelectorAll('.plan-btn').forEach(button => {
             button.addEventListener('click', function() {
                 const planName = this.getAttribute('data-plan');
@@ -1221,43 +1221,11 @@
                         behavior: 'smooth',
                         block: 'start'
                     });
-                } else {
-                    const message = `You selected the ${planName} plan. Redirecting to signup...`;
-                    showNotification(message);
                 }
             });
         });
 
-        // Notification system
-        function showNotification(message) {
-            const existingNotification = document.querySelector('.notification');
-            if (existingNotification) {
-                existingNotification.remove();
-            }
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.textContent = message;
-            notification.style.cssText = `
-                position: fixed;
-                top: 100px;
-                right: 20px;
-                background: var(--primary-blue);
-                color: white;
-                padding: 15px 20px;
-                border-radius: 10px;
-                box-shadow: 0 4px 20px rgba(30, 64, 175, 0.3);
-                z-index: 10000;
-                transition: all 0.3s ease;
-                max-width: 300px;
-                font-weight: 500;
-            `;
-            document.body.appendChild(notification);
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                notification.style.transform = 'translateX(100%)';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
+        
 
         // Demo animation with improved performance (single interval controller)
         let demoUpdateIntervalId = null;
