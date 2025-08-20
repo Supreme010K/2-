@@ -782,6 +782,22 @@
             box-shadow: 0 4px 20px rgba(30, 64, 175, 0.2);
         }
 
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: var(--primary-blue);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(30, 64, 175, 0.3);
+            z-index: 10000;
+            transition: all 0.3s ease;
+            max-width: 300px;
+            font-weight: 500;
+        }
+
         /* Responsive Design */
         @media (max-width: 1024px) {
             .hero-text h1 {
@@ -862,18 +878,9 @@
                 grid-template-columns: 1fr;
             }
 
-            .product-text h2 {
-                font-size: 2rem;
-            }
-
-            .how-it-works-content h2 {
-                font-size: 2rem;
-            }
-
-            .pricing h2 {
-                font-size: 2rem;
-            }
-
+            .product-text h2,
+            .how-it-works-content h2,
+            .pricing h2,
             .contact h2 {
                 font-size: 2rem;
             }
@@ -907,7 +914,6 @@
         /* Prevent button animation ring */
         .btn-primary, .btn-secondary, .btn-contact, .btn-login, .plan-btn {
             -webkit-tap-highlight-color: transparent;
-            outline: none;
         }
 
         .btn-primary:focus, .btn-secondary:focus, .btn-contact:focus, .btn-login:focus, .plan-btn:focus {
@@ -1240,8 +1246,6 @@
                 } else {
                     // Show selection message for other plans
                     const message = `You selected the ${planName} plan. Redirecting to signup...`;
-                    
-                    // Create a simple notification instead of alert
                     showNotification(message);
                 }
             });
@@ -1259,20 +1263,6 @@
             const notification = document.createElement('div');
             notification.className = 'notification';
             notification.textContent = message;
-            notification.style.cssText = `
-                position: fixed;
-                top: 100px;
-                right: 20px;
-                background: var(--primary-blue);
-                color: white;
-                padding: 15px 20px;
-                border-radius: 10px;
-                box-shadow: 0 4px 20px rgba(30, 64, 175, 0.3);
-                z-index: 10000;
-                transition: all 0.3s ease;
-                max-width: 300px;
-                font-weight: 500;
-            `;
 
             document.body.appendChild(notification);
 
