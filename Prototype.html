@@ -870,7 +870,7 @@
         }
 
         /* Focus styles for keyboard navigation */
-        a:focus, button:focus, .rating-button:focus {
+        a:focus-visible, button:focus-visible, .rating-button:focus-visible {
             outline: 2px solid var(--accent-yellow);
             outline-offset: 2px;
         }
@@ -891,9 +891,14 @@
             outline: none;
         }
 
-        .btn-primary:focus, .btn-secondary:focus, .btn-contact:focus, .btn-login:focus, .plan-btn:focus {
+        .btn-primary:focus-visible, .btn-secondary:focus-visible, .btn-contact:focus-visible, .btn-login:focus-visible, .plan-btn:focus-visible {
             outline: 2px solid var(--accent-yellow);
             outline-offset: 2px;
+        }
+        
+        /* Suppress outlines when focus isn't keyboard-initiated */
+        a:focus:not(:focus-visible) {
+            outline: none;
         }
 
         /* Loading states */
