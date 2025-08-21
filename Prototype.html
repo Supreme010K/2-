@@ -315,20 +315,6 @@
             border-color: var(--accent-yellow);
         }
 
-        .hero-features {
-            display: flex;
-            gap: 24px;
-            margin-top: 32px;
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .hero-feature {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
         /* Product & How It Works Combined Section */
         .product-how-section {
             padding: 80px 0;
@@ -842,11 +828,6 @@
             .demo-categories {
                 grid-template-columns: 1fr;
             }
-
-            .hero-features {
-                flex-direction: column;
-                gap: 12px;
-            }
         }
 
         @media (max-width: 480px) {
@@ -889,7 +870,7 @@
         }
 
         /* Focus styles for keyboard navigation */
-        a:focus, button:focus, .rating-button:focus {
+        a:focus-visible, button:focus-visible, .rating-button:focus-visible {
             outline: 2px solid var(--accent-yellow);
             outline-offset: 2px;
         }
@@ -910,9 +891,14 @@
             outline: none;
         }
 
-        .btn-primary:focus, .btn-secondary:focus, .btn-contact:focus, .btn-login:focus, .plan-btn:focus {
+        .btn-primary:focus-visible, .btn-secondary:focus-visible, .btn-contact:focus-visible, .btn-login:focus-visible, .plan-btn:focus-visible {
             outline: 2px solid var(--accent-yellow);
             outline-offset: 2px;
+        }
+        
+        /* Suppress outlines when focus isn't keyboard-initiated */
+        a:focus:not(:focus-visible) {
+            outline: none;
         }
 
         /* Loading states */
@@ -933,8 +919,8 @@
                 <a href="#pricing">Pricing</a>
             </div>
             <div class="nav-right">
-                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle mobile menu">☰</button>
-                <a href="#login" class="btn-login">Sign In</a>
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle mobile menu" aria-expanded="false" aria-controls="navCenter">☰</button>
+                <a href="#pricing" class="btn-login">Sign In</a>
                 <a href="#plans" class="btn-contact">Get Started</a>
             </div>
         </nav>
@@ -980,7 +966,7 @@
                         <h1>Turn customer feedback into clear, actionable NPS insights</h1>
                         <p>SnapLab collects survey responses, calculates per-category and overall NPS, and uses AI to surface themes you can act on—fast.</p>
                         <div class="cta-buttons">
-                            <a href="#demo" class="btn-secondary">Learn more</a>
+                            <a href="#how-it-works" class="btn-secondary">Learn more</a>
                             <a href="#products" class="btn-primary">Get started</a>
                         </div>
                     </div>
@@ -1076,7 +1062,7 @@
         <section class="pricing" id="pricing">
             <div class="container">
                 <h2>Choose Your Plan</h2>
-                <div class="plans-grid">
+                <div class="plans-grid" id="plans">
                     <div class="plan-card">
                         <div class="plan-name">Free</div>
                         <div class="plan-price">$0<span>/month</span></div>
@@ -1113,7 +1099,7 @@
                         </ul>
                         <button class="plan-btn" data-plan="Pro">Choose Pro</button>
                     </div>
-                    <div class="plan-card">
+                    <div class="plan-card" id="enterprise">
                         <div class="plan-name">Enterprise</div>
                         <div class="plan-price">Custom</div>
                         <ul class="plan-features">
@@ -1136,7 +1122,7 @@
                 <h2>Make better decisions with clearer signals</h2>
                 <p>Start collecting feedback today and turn it into action by tomorrow morning. Join restaurants using SnapLab to understand their customers better.</p>
                 <div class="cta-buttons">
-                    <a href="#enterprise" class="btn-primary">Contact us</a>
+                    <a href="#contact" class="btn-primary">Contact us</a>
                     <a href="#plans" class="btn-secondary">Get started</a>
                 </div>
             </div>
@@ -1179,7 +1165,9 @@
 
         mobileMenuBtn.addEventListener('click', function() {
             navCenter.classList.toggle('mobile-open');
-            this.textContent = navCenter.classList.contains('mobile-open') ? '✕' : '☰';
+            const isOpen = navCenter.classList.contains('mobile-open');
+            this.textContent = isOpen ? '✕' : '☰';
+            this.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
         });
 
         // Close mobile menu when clicking outside
@@ -1187,20 +1175,19 @@
             if (!event.target.closest('nav') && navCenter.classList.contains('mobile-open')) {
                 navCenter.classList.remove('mobile-open');
                 mobileMenuBtn.textContent = '☰';
+                mobileMenuBtn.setAttribute('aria-expanded', 'false');
             }
         });
 
-        // Smooth scrolling for navigation links
+        // Smooth scrolling for navigation links (only if target exists)
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
-                e.preventDefault();
                 const targetId = this.getAttribute('href');
                 const target = document.querySelector(targetId);
-                
                 if (target) {
+                    e.preventDefault();
                     const headerHeight = document.querySelector('header').offsetHeight;
                     const targetPosition = target.offsetTop - headerHeight;
-                    
                     window.scrollTo({
                         top: targetPosition,
                         behavior: 'smooth'
@@ -1210,6 +1197,7 @@
                     if (navCenter.classList.contains('mobile-open')) {
                         navCenter.classList.remove('mobile-open');
                         mobileMenuBtn.textContent = '☰';
+                        mobileMenuBtn.setAttribute('aria-expanded', 'false');
                     }
                 }
             });
@@ -1218,106 +1206,60 @@
         // Interactive demo functionality
         document.querySelectorAll('.rating-button').forEach(button => {
             button.addEventListener('click', function() {
-                // Remove selected from siblings
                 const siblings = this.parentElement.querySelectorAll('.rating-button');
                 siblings.forEach(btn => btn.classList.remove('selected'));
-                // Add selected to clicked button
                 this.classList.add('selected');
             });
         });
 
-        // Plan selection functionality
+        // Plan selection functionality (no redirect messages)
         document.querySelectorAll('.plan-btn').forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function(e) {
+                // Prevent any default behavior and stop other handlers
+                e.preventDefault();
+                e.stopPropagation();
+
                 const planName = this.getAttribute('data-plan');
-                
                 if (planName === 'Enterprise') {
-                    // Scroll to contact section for enterprise
                     document.querySelector('#contact').scrollIntoView({
                         behavior: 'smooth',
                         block: 'start'
                     });
-                } else {
-                    // Show selection message for other plans
-                    const message = `You selected the ${planName} plan. Redirecting to signup...`;
-                    
-                    // Create a simple notification instead of alert
-                    showNotification(message);
                 }
             });
         });
 
-        // Notification system
-        function showNotification(message) {
-            // Remove existing notifications
-            const existingNotification = document.querySelector('.notification');
-            if (existingNotification) {
-                existingNotification.remove();
-            }
+        
 
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.textContent = message;
-            notification.style.cssText = `
-                position: fixed;
-                top: 100px;
-                right: 20px;
-                background: var(--primary-blue);
-                color: white;
-                padding: 15px 20px;
-                border-radius: 10px;
-                box-shadow: 0 4px 20px rgba(30, 64, 175, 0.3);
-                z-index: 10000;
-                transition: all 0.3s ease;
-                max-width: 300px;
-                font-weight: 500;
-            `;
-
-            document.body.appendChild(notification);
-
-            // Remove notification after 3 seconds
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                notification.style.transform = 'translateX(100%)';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-
-        // Demo animation with improved performance
-        function updateDemoValues() {
+        // Demo animation with improved performance (single interval controller)
+        let demoUpdateIntervalId = null;
+        function startDemoValueUpdates() {
+            if (demoUpdateIntervalId !== null) return;
             const demoElements = [
                 { selector: '.demo-value', min: 55, max: 70 },
                 { selector: '.dashboard-score', min: 60, max: 75 },
                 { selector: '.category-score', min: 40, max: 80 }
             ];
-
-            const updateInterval = setInterval(() => {
+            demoUpdateIntervalId = setInterval(() => {
                 demoElements.forEach(({ selector, min, max }) => {
                     const elements = document.querySelectorAll(selector);
                     elements.forEach(element => {
                         const currentValue = parseInt(element.textContent.replace('+', '')) || 0;
-                        const variation = Math.floor(Math.random() * 5) - 2; // -2 to +2
-                        let newValue = Math.max(min, Math.min(max, currentValue + variation));
-                        
-                        // Format the value
-                        const formattedValue = selector === '.demo-value' || selector === '.dashboard-score' 
+                        const variation = Math.floor(Math.random() * 5) - 2;
+                        const newValue = Math.max(min, Math.min(max, currentValue + variation));
+                        const formattedValue = (selector === '.demo-value' || selector === '.dashboard-score')
                             ? newValue.toString()
                             : `+${newValue}`;
-                        
                         element.textContent = formattedValue;
                     });
                 });
             }, 4000);
-
-            // Clear interval when page is hidden (performance optimization)
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden) {
-                    clearInterval(updateInterval);
-                } else {
-                    updateDemoValues(); // Restart when page becomes visible
-                }
-            });
+        }
+        function stopDemoValueUpdates() {
+            if (demoUpdateIntervalId !== null) {
+                clearInterval(demoUpdateIntervalId);
+                demoUpdateIntervalId = null;
+            }
         }
 
         // Intersection Observer for animations
@@ -1344,9 +1286,16 @@
                 el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
                 observer.observe(el);
             });
+            startDemoValueUpdates();
+        });
 
-            // Start demo animation
-            updateDemoValues();
+        // Pause/resume demo updates based on tab visibility
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                stopDemoValueUpdates();
+            } else {
+                startDemoValueUpdates();
+            }
         });
 
         // Keyboard navigation improvements
@@ -1354,18 +1303,8 @@
             if (e.key === 'Escape' && navCenter.classList.contains('mobile-open')) {
                 navCenter.classList.remove('mobile-open');
                 mobileMenuBtn.textContent = '☰';
+                mobileMenuBtn.setAttribute('aria-expanded', 'false');
             }
-        });
-
-        // Performance optimization: Debounce scroll events
-        let scrollTimeout;
-        window.addEventListener('scroll', () => {
-            if (scrollTimeout) {
-                clearTimeout(scrollTimeout);
-            }
-            scrollTimeout = setTimeout(() => {
-                // Add scroll-based functionality here if needed
-            }, 100);
         });
     </script>
 </body>
